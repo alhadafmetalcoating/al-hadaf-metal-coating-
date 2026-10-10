@@ -1,0 +1,18 @@
+# Al-Hadaf Metal Coating LLC
+
+> Best powder coating in UAE from Al-Hadaf Metal Coating LLC, Industrial Area 15, Near National Paints, Sharjah. Powder coating, sandblasting, galvanizing, electroplating, tin plating, gold/silver plating and antique finishes for architectural, industrial, automotive and furniture metal across Sharjah, Dubai, Ajman and Abu Dhabi.
+
+The standard filename crawlers look for is /llms.txt. This file mirrors that content so /llm.txt resolves as well.
+
+## Pages
+
+- [Home](https://www.alhadafmetalcoating.com/): Best powder coating in UAE
+- [Powder coating](https://www.alhadafmetalcoating.com/services/powder-coating): Best powder coating in UAE, Sharjah and Dubai
+- [Services](https://www.alhadafmetalcoating.com/services)
+- [Blogs](https://www.alhadafmetalcoating.com/blog)
+- [Contact](https://www.alhadafmetalcoating.com/contact)
+
+## Optional
+
+- [Full LLM guide](https://www.alhadafmetalcoating.com/llms.txt)
+- [Sitemap](https://www.alhadafmetalcoating.com/sitemap.xml)
