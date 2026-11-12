@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/Components/ui/button";
 import { Card } from "@/Components/ui/card";
 import { X, User, Calendar, ChevronLeft, ChevronRight } from "lucide-react";
+import { displayDate } from "@/lib/content";
 
 function BlogDetailsModal({ blog, onClose }) {
   // ============================================
@@ -39,7 +40,7 @@ function BlogDetailsModal({ blog, onClose }) {
     title: blog.Title || "Untitled Blog",
     author: blog["Author/Lead"] || "Anonymous",
     content: blog.Content || "No content available.",
-    timestamp: blog.Timestamp || "",
+    timestamp: displayDate(blog.TimestampRaw || blog.Timestamp) || "",
     images: blog.ImageURLs 
       ? blog.ImageURLs.split(",").map(url => url.trim()).filter(url => url)
       : []

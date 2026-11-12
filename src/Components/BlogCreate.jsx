@@ -6,11 +6,12 @@ import { Button } from "@/Components/ui/button";
 import { Card } from "@/Components/ui/card";
 import { Lock, CheckCircle, XCircle, Loader2 } from "lucide-react";
 import ImageUploader from "../Components/ImageUploader";
+import { SEO_DESCRIPTION_PARAM, SEO_TITLE_PARAM, TIMESTAMP_PARAM } from "@/lib/content";
 
 // ============================================
 // 🔧 CONFIGURATION
 // ============================================
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx0tO-WtDoYrojLZtAwcgxVBcc2DChXfLvrU0aTZ8NrFsBkp9UYmZtejrArvtXa2bXUbA/exec"; // 👈 Paste deployed Apps Script URL
+const CONTENT_API = "/api/content";
 const ADMIN_PASSWORD = "alhadaf2025"; // 👈 Same as Apps Script backend
 
 function BlogCreate() {
@@ -29,7 +30,10 @@ function BlogCreate() {
     title: "",
     author: "",
     content: "",
-    imageURLs: ""
+    imageURLs: "",
+    seoTitle: "",
+    seoDescription: "",
+    timestamp: ""
   });
 
   // Project Form State
@@ -41,7 +45,10 @@ function BlogCreate() {
     member3: "",
     company: "",
     content: "",
-    imageURLs: ""
+    imageURLs: "",
+    seoTitle: "",
+    seoDescription: "",
+    timestamp: ""
   });
 
   // ============================================
@@ -86,8 +93,11 @@ function BlogCreate() {
       formData.append("author", blogForm.author.trim());
       formData.append("content", blogForm.content.trim());
       formData.append("imageURLs", blogForm.imageURLs.trim());
+      formData.append(SEO_TITLE_PARAM, blogForm.seoTitle.trim());
+      formData.append(SEO_DESCRIPTION_PARAM, blogForm.seoDescription.trim());
+      if (blogForm.timestamp.trim()) formData.append(TIMESTAMP_PARAM, blogForm.timestamp.trim());
 
-      const response = await fetch(APPS_SCRIPT_URL, {
+      const response = await fetch(CONTENT_API, {
         method: "POST",
         body: formData
       });
@@ -96,7 +106,7 @@ function BlogCreate() {
 
       if (result.result === "success") {
         setSuccess(true);
-        setBlogForm({ title: "", author: "", content: "", imageURLs: "" });
+        setBlogForm({ title: "", author: "", content: "", imageURLs: "", seoTitle: "", seoDescription: "", timestamp: "" });
         setTimeout(() => (window.location.href = "/blog"), 2000);
       } else {
         setError(result.message || "Failed to save blog");
@@ -146,8 +156,11 @@ function BlogCreate() {
       formData.append("company", projectForm.company.trim());
       formData.append("content", projectForm.content.trim());
       formData.append("imageURLs", projectForm.imageURLs.trim());
+      formData.append(SEO_TITLE_PARAM, projectForm.seoTitle.trim());
+      formData.append(SEO_DESCRIPTION_PARAM, projectForm.seoDescription.trim());
+      if (projectForm.timestamp.trim()) formData.append(TIMESTAMP_PARAM, projectForm.timestamp.trim());
 
-      const response = await fetch(APPS_SCRIPT_URL, {
+      const response = await fetch(CONTENT_API, {
         method: "POST",
         body: formData
       });
@@ -164,7 +177,10 @@ function BlogCreate() {
           member3: "",
           company: "",
           content: "",
-          imageURLs: ""
+          imageURLs: "",
+          seoTitle: "",
+          seoDescription: "",
+          timestamp: ""
         });
         setTimeout(() => (window.location.href = "/blog"), 2000);
       } else {
@@ -373,6 +389,46 @@ function BlogCreate() {
                     </p>
                   </div>
 
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      SEO title (optional)
+                    </label>
+                    <input
+                      type="text"
+                      name="seoTitle"
+                      value={blogForm.seoTitle}
+                      onChange={handleBlogChange}
+                      placeholder="Shown as the document title. Leave blank to use the post title."
+                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-red-600 focus:outline-none transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      SEO description (optional)
+                    </label>
+                    <textarea
+                      name="seoDescription"
+                      value={blogForm.seoDescription}
+                      onChange={handleBlogChange}
+                      placeholder="140–160 characters. Leave blank for an automatic excerpt."
+                      rows={3}
+                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-red-600 focus:outline-none transition-all resize-vertical"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Publish time (optional, ISO 8601 UTC)
+                    </label>
+                    <input
+                      type="text"
+                      name="timestamp"
+                      value={blogForm.timestamp}
+                      onChange={handleBlogChange}
+                      placeholder="2026-11-09T04:39:28.000Z"
+                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-red-600 focus:outline-none transition-all"
+                    />
+                  </div>
+
                   {/* Image Upload Component */}
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -485,6 +541,46 @@ function BlogCreate() {
                       rows={10}
                       className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-red-600 focus:outline-none transition-all resize-vertical"
                       required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      SEO title (optional)
+                    </label>
+                    <input
+                      type="text"
+                      name="seoTitle"
+                      value={projectForm.seoTitle}
+                      onChange={handleProjectChange}
+                      placeholder="Shown as the document title. Leave blank to use the project title."
+                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-red-600 focus:outline-none transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      SEO description (optional)
+                    </label>
+                    <textarea
+                      name="seoDescription"
+                      value={projectForm.seoDescription}
+                      onChange={handleProjectChange}
+                      placeholder="140–160 characters. Leave blank for an automatic excerpt."
+                      rows={3}
+                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-red-600 focus:outline-none transition-all resize-vertical"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Publish time (optional, ISO 8601 UTC)
+                    </label>
+                    <input
+                      type="text"
+                      name="timestamp"
+                      value={projectForm.timestamp}
+                      onChange={handleProjectChange}
+                      placeholder="2026-11-09T04:39:28.000Z"
+                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-red-600 focus:outline-none transition-all"
                     />
                   </div>
 

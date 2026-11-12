@@ -8,7 +8,7 @@ import Footer from "../Components/Footer";
 import { Button } from "@/Components/ui/button";
 import { Card } from "@/Components/ui/card";
 import { ArrowLeft, Building2, User, Calendar, Users, ChevronLeft, ChevronRight } from "lucide-react";
-import { fetchSheetItems, itemSlug, splitImages } from "@/lib/content";
+import { displayDate, fetchSheetItems, findItemBySlug, splitImages } from "@/lib/content";
 
 export default function ContentArticle({ type }) {
   const { slug } = useParams();
@@ -30,7 +30,7 @@ export default function ContentArticle({ type }) {
     fetchSheetItems()
       .then((rows) => {
         if (!active) return;
-        const match = rows.find((row) => row.Type === type && itemSlug(row) === slug);
+        const match = findItemBySlug(rows, type, slug);
         setItem(match || null);
         if (!match) setError("This page could not be found.");
       })
@@ -152,7 +152,7 @@ export default function ContentArticle({ type }) {
                       <Calendar className="w-5 h-5 text-red-600 mt-1" />
                       <div>
                         <p className="text-xs text-gray-500 font-semibold uppercase">Date</p>
-                        <p className="font-bold text-gray-900">{item.Timestamp || "N/A"}</p>
+                        <p className="font-bold text-gray-900">{displayDate(item.TimestampRaw || item.Timestamp) || "N/A"}</p>
                       </div>
                     </div>
                     {isProject && team.length > 0 && (

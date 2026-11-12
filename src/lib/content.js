@@ -1,20 +1,31 @@
+import { toUtcIso } from "./dates.js";
+import { findItemBySlug } from "./published.js";
+
+export { slugify } from "./slug.js";
+export { itemSlug, findItemBySlug } from "./published.js";
+export { displayDate, compareNewest, publishedMs, toUtcIso } from "./dates.js";
+
 export const APPS_SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycbx0tO-WtDoYrojLZtAwcgxVBcc2DChXfLvrU0aTZ8NrFsBkp9UYmZtejrArvtXa2bXUbA/exec";
 
-export function slugify(value) {
-  const slug = String(value || "")
-    .normalize("NFKD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-  return slug || "item";
+export const SEO_TITLE_PARAM = "SeoTitle";
+export const SEO_DESCRIPTION_PARAM = "SeoDescription";
+export const TIMESTAMP_PARAM = "timestamp";
+
+function stringifyTimestamp(value) {
+  if (value instanceof Date && !Number.isNaN(value.getTime())) return value.toISOString();
+  return String(value ?? "").trim();
 }
 
-export function itemSlug(item) {
-  const title = slugify(item?.Title);
-  const stamp = slugify(item?.Timestamp).slice(0, 32);
-  return stamp ? `${title}-${stamp}` : title;
+export function normalizeItem(row) {
+  const TimestampRaw = stringifyTimestamp(row?.Timestamp);
+  const iso = toUtcIso(TimestampRaw);
+  return {
+    ...row,
+    Type: String(row?.Type || "").trim(),
+    TimestampRaw,
+    Timestamp: iso || TimestampRaw,
+  };
 }
 
 export function splitImages(value) {
@@ -25,25 +36,20 @@ export function splitImages(value) {
 }
 
 export async function fetchSheetItems() {
-  const options = { next: { revalidate: 3600 } };
+  const onServer = typeof window === "undefined";
+  const options = onServer ? { next: { revalidate: 3600 } } : { cache: "no-store" };
   if (typeof AbortSignal !== "undefined" && typeof AbortSignal.timeout === "function") {
-    options.signal = AbortSignal.timeout(8000);
+    options.signal = AbortSignal.timeout(20000);
   }
-  const response = await fetch(APPS_SCRIPT_URL, options);
+  const response = await fetch(onServer ? APPS_SCRIPT_URL : "/api/content", options);
   const result = await response.json();
   if (result.result !== "success" || !Array.isArray(result.data)) {
     throw new Error("Failed to fetch content");
   }
-  return result.data;
+  return result.data.map(normalizeItem);
 }
 
 export async function findSheetItem(type, slug) {
   const rows = await fetchSheetItems();
-  return rows.find((row) => row.Type === type && itemSlug(row) === slug) || null;
-}
-
-export function excerpt(text, length = 155) {
-  const clean = String(text || "").replace(/\s+/g, " ").trim();
-  if (clean.length <= length) return clean;
-  return `${clean.slice(0, length).trim()}…`;
+  return findItemBySlug(rows, type, slug);
 }

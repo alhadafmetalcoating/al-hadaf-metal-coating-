@@ -1,5 +1,6 @@
 import { SERVICES } from "@/data/services";
-import { fetchSheetItems, itemSlug } from "@/lib/content";
+import { fetchSheetItems, itemSlug, toUtcIso } from "@/lib/content";
+import { sectionBase } from "@/lib/published";
 import { SITE } from "@/lib/seo";
 
 export const revalidate = 3600;
@@ -36,22 +37,14 @@ export default async function sitemap() {
     const rows = await fetchSheetItems();
     for (const row of rows) {
       const slug = itemSlug(row);
-      const parsed = row.Timestamp ? new Date(row.Timestamp) : lastModified;
-      const modified = Number.isNaN(parsed.getTime()) ? lastModified : parsed;
-      if (row.Type === "blog") {
+      const iso = toUtcIso(row.TimestampRaw || row.Timestamp);
+      const modified = iso ? new Date(iso) : undefined;
+      if (row.Type === "blog" || row.Type === "project") {
         entries.push({
-          url: `${SITE}/blog/${slug}`,
+          url: `${SITE}${sectionBase(row.Type)}/${slug}`,
           lastModified: modified,
           changeFrequency: "monthly",
-          priority: 0.7,
-        });
-      }
-      if (row.Type === "project") {
-        entries.push({
-          url: `${SITE}/projects/${slug}`,
-          lastModified: modified,
-          changeFrequency: "monthly",
-          priority: 0.65,
+          priority: row.Type === "blog" ? 0.7 : 0.65,
         });
       }
     }

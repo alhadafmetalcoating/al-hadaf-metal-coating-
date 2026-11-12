@@ -13,7 +13,7 @@ import AboutShort from "@/Components/AboutShort";
 import Certificates from "../Components/Certificates";
 import SpinWheel from "../Components/SpinWheel";
 import FestiveModal from "../Components/FestiveModal";
-import { fetchSheetItems, itemSlug } from "@/lib/content";
+import { compareNewest, fetchSheetItems, itemSlug } from "@/lib/content";
 
 function LandingPage() {
   const [showScroll, setShowScroll] = useState(false);
@@ -118,7 +118,7 @@ function LandingPage() {
     try {
       const rows = await fetchSheetItems();
       const projects = rows.filter(item => item.Type === "project");
-      projects.sort((a, b) => new Date(b.Timestamp) - new Date(a.Timestamp));
+      projects.sort(compareNewest);
       setProjectsData(projects);
     } catch (err) {
       console.error("Failed to fetch projects:", err);

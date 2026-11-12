@@ -9,7 +9,7 @@ import { Button } from "@/Components/ui/button";
 import { Card } from "@/Components/ui/card";
 import { ArrowUp, Calendar, User, Building2, Users, ArrowLeft } from "lucide-react";
 import BlogCreate from "../Components/BlogCreate";
-import { fetchSheetItems, itemSlug } from "@/lib/content";
+import { compareNewest, displayDate, fetchSheetItems, itemSlug } from "@/lib/content";
 
 function BlogDisplay() {
   // ============================================
@@ -43,8 +43,8 @@ function BlogDisplay() {
       const allData = await fetchSheetItems();
       const blogs = allData.filter(item => item.Type === "blog");
       const projects = allData.filter(item => item.Type === "project");
-      blogs.sort((a, b) => new Date(b.Timestamp) - new Date(a.Timestamp));
-      projects.sort((a, b) => new Date(b.Timestamp) - new Date(a.Timestamp));
+      blogs.sort(compareNewest);
+      projects.sort(compareNewest);
       setBlogsData(blogs);
       setProjectsData(projects);
     } catch (err) {
@@ -76,7 +76,7 @@ function BlogDisplay() {
 
     return (
       <Card 
-        key={blog.Timestamp} 
+        key={itemSlug(blog)} 
         className="overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
       >
         {/* Image Section */}
@@ -104,7 +104,7 @@ function BlogDisplay() {
             </div>
             <div className="flex items-center gap-2">
               <Calendar className="w-4 h-4" />
-              <span>{blog.Timestamp}</span>
+              <span>{displayDate(blog.TimestampRaw || blog.Timestamp) || "N/A"}</span>
             </div>
           </div>
 
@@ -138,7 +138,7 @@ function BlogDisplay() {
 
     return (
       <Card 
-        key={project.Timestamp}
+        key={itemSlug(project)}
         className="overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
       >
         {/* Image Section */}
@@ -176,7 +176,7 @@ function BlogDisplay() {
             )}
             <div className="flex items-center gap-2">
               <Calendar className="w-4 h-4" />
-              <span>{project.Timestamp}</span>
+              <span>{displayDate(project.TimestampRaw || project.Timestamp) || "N/A"}</span>
             </div>
           </div>
 

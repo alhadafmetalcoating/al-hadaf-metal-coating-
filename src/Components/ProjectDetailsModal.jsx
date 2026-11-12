@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/Components/ui/button";
 import { Card } from "@/Components/ui/card";
 import { X, Building2, User, Calendar, ChevronLeft, ChevronRight } from "lucide-react";
+import { displayDate } from "@/lib/content";
 
 function ProjectDetailsModal({ project, onClose }) {
   // ============================================
@@ -40,7 +41,7 @@ function ProjectDetailsModal({ project, onClose }) {
     lead: project["Author/Lead"] || "Unknown",
     company: project.Company || "N/A",
     content: project.Content || "No description available.",
-    timestamp: project.Timestamp || "",
+    timestamp: displayDate(project.TimestampRaw || project.Timestamp) || "",
     images: project.ImageURLs 
       ? project.ImageURLs.split(",").map(url => url.trim()).filter(url => url)
       : []
